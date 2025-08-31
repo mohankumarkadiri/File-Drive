@@ -101,6 +101,9 @@ The server will run on [https://localhost:17291](https://localhost:17291).
 
 ---
 
+### Routes
+<img width="300" height="491" alt="image" src="https://github.com/user-attachments/assets/de601c11-17bd-4190-889d-4c9d42a83dee" />
+
 ## License
 
 MIT – feel free to fork, modify, and contribute!
