@@ -61,7 +61,23 @@ const listContents = async (req, res) => {
     }
 };
 
+const renameFolder = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { folderId } = req.params;
+        const { name } = req.body;
+        const { access } = await hasAccessToFolder(userId, folderId);
+        if (![EDITOR, OWNER].includes(access)) return res.status(403).send({ message: 'Insufficient permissions to rename the folder' })
+
+        updatedFolder = await folderModel.findByIdAndUpdate(folderId, { name }, { new: true })
+        return res.status(200).send(updatedFolder)
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to rename the folder' })
+    }
+}
+
 module.exports = {
     listContents,
-    createFolder
+    createFolder,
+    renameFolder
 }
