@@ -101,9 +101,57 @@ const deleteFile = async (req, res) => {
     }
 }
 
+const share = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { fileId } = req.params;
+        const sharedWith = req.body;
+
+        const { access } = await hasAccessToFile(userId, fileId);
+        if (access !== OWNER) return res.status(403).send({ message: 'Insufficient Permissions to share file with others' })
+
+        const updatedFile = await fileModel.findByIdAndUpdate(fileId, { $addToSet: { sharedWith } }, { new: true }).lean()
+
+        return res.status(200).send(updatedFile)
+
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to share file with others' })
+    }
+}
+
+const updatePermissions = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { fileId } = req.params;
+        const { userId: sharedWithUserId, permission } = req.body;
+
+        const { access } = await hasAccessToFile(userId, fileId);
+        if (access !== OWNER) {
+            return res.status(403).send({ message: 'Insufficient permissions to update file permissions' })
+        }
+
+        const updatedFile = await fileModel.findOneAndUpdate({
+            _id: fileId, 'sharedWith.userId': sharedWithUserId
+        },
+            { $set: { 'sharedWith.$.permission': permission } },
+            { new: true }
+        ).lean()
+
+        if (!updatedFile) {
+            return res.status(404).send({ message: 'User not found in shared list' })
+        }
+
+        return res.status(200).send(updatedFile);
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to update file permissions' })
+    }
+}
+
 module.exports = {
     upload,
     download,
     trash,
-    deleteFile
+    deleteFile,
+    share,
+    updatePermissions
 }

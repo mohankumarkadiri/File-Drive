@@ -1,12 +1,14 @@
 const fileRouter = require('express').Router();
 const { isAuthenticated } = require('../middleware/auth');
 const multerUpload = require('../middleware/upload');
-const { upload, download, trash, deleteFile } = require('../controllers/file');
+const { upload, download, trash, deleteFile, share, updatePermissions } = require('../controllers/file');
 
 
 fileRouter.post('/upload', isAuthenticated, multerUpload.single('file'), upload);
 fileRouter.get('/:id/download', isAuthenticated, download);
 fileRouter.put('/:id/trash', isAuthenticated, trash);
 fileRouter.delete('/:id', isAuthenticated, deleteFile);
+fileRouter.put('/:fileId/share', isAuthenticated, share);
+fileRouter.put('/:fileId/permissions', isAuthenticated, updatePermissions)
 
 module.exports = fileRouter;

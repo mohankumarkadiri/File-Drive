@@ -76,8 +76,56 @@ const renameFolder = async (req, res) => {
     }
 }
 
+const shareFolder = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { folderId } = req.params;
+        const sharedWith = req.body;
+
+        const { access } = await hasAccessToFolder(userId, folderId);
+        if (access !== OWNER) return res.status(403).send({ message: 'Insufficient Permissions to share folder with others' })
+
+        const updatedFolder = await folderModel.findByIdAndUpdate(folderId, { $addToSet: { sharedWith } }, { new: true }).lean()
+
+        return res.status(200).send(updatedFolder)
+
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to share folder with others' })
+    }
+}
+
+const updatePermissions = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { folderId } = req.params;
+        const { userId: sharedWithUserId, permission } = req.body;
+
+        const { access } = await hasAccessToFolder(userId, folderId);
+        if (access !== OWNER) {
+            return res.status(403).send({ message: 'Insufficient permissions to update folder permissions' })
+        }
+
+        const updatedFolder = await folderModel.findOneAndUpdate({
+            _id: folderId, 'sharedWith.userId': sharedWithUserId
+        },
+            { $set: { 'sharedWith.$.permission': permission } },
+            { new: true }
+        ).lean()
+
+        if (!updatedFolder) {
+            return res.status(404).send({ message: 'User not found in shared list' })
+        }
+
+        return res.status(200).send(updatedFolder);
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to update folder permissions' })
+    }
+}
+
 module.exports = {
     listContents,
     createFolder,
-    renameFolder
+    renameFolder,
+    shareFolder,
+    updatePermissions
 }
