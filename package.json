@@ -1,0 +1,33 @@
+{
+	"name": "file-drive",
+	"version": "1.0.0",
+	"description": "A secure, team-friendly backend API for file storage and management in the cloud. It allows users to authenticate using Google, store files in hierarchical folders, upload/download files directly onto AWS S3, and control access and permissions at the user and folder/file level. Built for extensibility and security, FileDrive is perfect for developing your own Google Drive-like backend or adding cloud file management to your apps.",
+	"main": "server.js",
+	"scripts": {
+		"start": "node src/server.js",
+		"dev": "nodemon src/server.js"
+	},
+	"repository": "https://github.com/mohankumarkadiri/File-Drive.git",
+	"author": "mohankumarkadiri <kadirimohankumar1709@gmail.com>",
+	"license": "MIT",
+	"private": true,
+	"dependencies": {
+		"aws-sdk": "^2.1692.0",
+		"connect-mongo": "^5.1.0",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.5",
+		"dotenv": "^17.2.1",
+		"express": "^5.1.0",
+		"express-pino-logger": "^7.0.0",
+		"express-session": "^1.18.2",
+		"mongoose": "^8.17.0",
+		"multer": "^2.0.2",
+		"node-cron": "^4.2.1",
+		"passport": "^0.7.0",
+		"passport-google-oauth20": "^2.0.0",
+		"pino": "^9.9.0"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.10"
+	}
+}
