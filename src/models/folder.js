@@ -26,12 +26,6 @@ const folderSchema = new Schema({
         index: true
     },
     sharedWith: [sharedWithSchema],
-    inTrash: {
-        type: Boolean,
-        default: false,
-        index: true
-    },
-    trashedAt: { type: Date }
 }, {
     timestamps: true,
     collection: 'Folders'
