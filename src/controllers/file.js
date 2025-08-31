@@ -80,8 +80,30 @@ const trash = async (req, res) => {
     }
 };
 
+/** Permanent file deletion */
+const deleteFile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const fileId = req.params.id;
+
+        const { access, file } = await hasAccessToFile(userId, fileId);
+        if (![EDITOR, OWNER].includes(access)) return res.status(403).send({ message: 'No access to file' });
+
+        // delete file from S3
+        await storage.deleteObject(file.path);
+
+        // delete metadata from mongodb
+        await fileModel.findByIdAndDelete(file._id);
+
+        return res.status(200).send({ message: 'Permanently deleted the file' })
+    } catch (error) {
+        return res.status(500).send({ message: error.message || 'Failed to delete the file' })
+    }
+}
+
 module.exports = {
     upload,
     download,
     trash,
+    deleteFile
 }
